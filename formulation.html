@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Formulation &#8212; atomman-gb 0.1.dev1+g840bdcf</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api/api.html" />
+    <link rel="prev" title="atomman-gb" href="index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">atomman-gb 0.1.dev1+g840bdcf</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="index.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   CSL
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="api/api.html">
+   API Reference
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/api_core.html">
+     Core classes
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/api_system.html">
+     System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api/api_csl.html">
+     CSL
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="changelog.html">
+   Change Log
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/formulation.md.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.md</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#intersection-of-lattices">
+   Intersection of lattices
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#coincidence-site-lattice-csl">
+   Coincidence-site lattice (CSL)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#set-up">
+     Set up
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#rodrigue-s-formula">
+     Rodrigue’s formula
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#csl">
+     CSL
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sigma-values-for-cubic-system-grimmer-a23030">
+   <span class="math notranslate nohighlight">
+    \(\Sigma\)
+   </span>
+   values for cubic system
+   <span class="xref cite">
+    Grimmer:a23030
+   </span>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Formulation</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#intersection-of-lattices">
+   Intersection of lattices
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#coincidence-site-lattice-csl">
+   Coincidence-site lattice (CSL)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#set-up">
+     Set up
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#rodrigue-s-formula">
+     Rodrigue’s formula
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#csl">
+     CSL
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sigma-values-for-cubic-system-grimmer-a23030">
+   <span class="math notranslate nohighlight">
+    \(\Sigma\)
+   </span>
+   values for cubic system
+   <span class="xref cite">
+    Grimmer:a23030
+   </span>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section id="formulation">
+<h1>Formulation<a class="headerlink" href="#formulation" title="Permalink to this headline">#</a></h1>
+<section id="intersection-of-lattices">
+<h2>Intersection of lattices<a class="headerlink" href="#intersection-of-lattices" title="Permalink to this headline">#</a></h2>
+<p>We define a lattice for basis <span class="math notranslate nohighlight">\(\mathbf{B} = (\mathbf{b}_{1}, \dots, \mathbf{b}_{n})\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[    \mathcal{L}(\mathbf{B})
+        := \left\{
+            \sum_{i=1}^{n} n_{i} \mathbf{b}_{i}
+            \mid
+            n_{i} \in \mathbb{Z} (\forall i)
+            \right\}.\]</div>
+<p>For lattice basis <span class="math notranslate nohighlight">\(\mathbf{B}\)</span>, we define the dual basis as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}  \mathbf{D}
+    &amp;:= \mathbf{B} (\mathbf{B}^{\top} \mathbf{B})^{-1} =: (\mathbf{d}_{1}, \dots, \mathbf{d}_{n}) \\
+  \mathbf{D}^{\top} \mathbf{B} &amp;= \mathbf{I}.\end{split}\]</div>
+<p>We write the dual lattice of <span class="math notranslate nohighlight">\(\mathcal{L}(\mathbf{B})\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[  \mathcal{L}(\mathbf{B})^{\ast} := \mathcal{L}(\mathbf{D}).\]</div>
+<p>The intersection of two lattices can be obtained as follows <a class="footnote-reference brackets" href="#footnote" id="id1">1</a>:</p>
+<div class="math notranslate nohighlight">
+\[  \mathcal{L}(\mathbf{B}) \cap \mathcal{L}(\mathbf{B}')
+    = \mathcal{L}([\mathbf{D} \mid \mathbf{D}'])^{\ast}
+      \quad
+      (\mathcal{L}(\mathbf{D}) := \mathcal{L}(\mathbf{B})^{\ast}, \mathcal{L}(\mathbf{D}') := \mathcal{L}(\mathbf{B}')^{\ast})\]</div>
+</section>
+<section id="coincidence-site-lattice-csl">
+<h2>Coincidence-site lattice (CSL)<a class="headerlink" href="#coincidence-site-lattice-csl" title="Permalink to this headline">#</a></h2>
+<section id="set-up">
+<h3>Set up<a class="headerlink" href="#set-up" title="Permalink to this headline">#</a></h3>
+<p>Consider two lattices, <span class="math notranslate nohighlight">\(L_{\mathbf{A}}\)</span> and <span class="math notranslate nohighlight">\(L_{\mathbf{A}'}\)</span>, composed of lattice vectors <span class="math notranslate nohighlight">\(\mathbf{A} = (\mathbf{a}_{1}, \mathbf{a}_{2}, \mathbf{a}_{3})\)</span> and <span class="math notranslate nohighlight">\(\mathbf{A}' = (\mathbf{a}_{1}', \mathbf{a}_{2}', \mathbf{a}_{3}')\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[  L_{\mathbf{A}}
+    := \left\{
+        \mathbf{An}
+        \mid
+        \mathbf{n} \in \mathbb{Z}^{3}
+        \right\}.\]</div>
+<p>The two lattices are related by a rotation matrix <span class="math notranslate nohighlight">\(\mathbf{R}\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[  \mathbf{A}' = \mathbf{R} \mathbf{A}.\]</div>
+</section>
+<section id="rodrigue-s-formula">
+<h3>Rodrigue’s formula<a class="headerlink" href="#rodrigue-s-formula" title="Permalink to this headline">#</a></h3>
+<div class="math notranslate nohighlight">
+\[\begin{split}  \mathbf{R} &amp;= \mathbf{I} + \mathbf{K} \sin \theta + \mathbf{K}^{2} (1 - \cos \theta) \\
+  \mathbf{K}
+    &amp;= \begin{pmatrix}
+          0 &amp; -k_{z} &amp; k_{y} \\
+          k_{z} &amp; 0 &amp; -k_{x} \\
+          -k_{y} &amp; k_{x} &amp; 0
+       \end{pmatrix},\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{k}\)</span> is a unit vector along the rotation axis.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}  \overline{\mathbf{R}}
+    &amp;:= \mathbf{A}^{-1} \mathbf{RA} \\
+  \mathbf{A}'
+    &amp;= \mathbf{RA} = \mathbf{A} \overline{\mathbf{R}}\end{split}\]</div>
+<p>Rodrigues vector</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}    \mathbf{\rho}^{R}
+        &amp;:= \tan \frac{\theta}{2} (k_{z} \, k_{y} \, k_{z})^{\top} \\
+    (1 + (\rho^{R})^{2}) R_{ij}
+        &amp;= (1 - (\rho^{R})^{2}) \delta_{ij}
+        + 2\left( \rho^{R}_{i} \rho^{R}_{j} + \sum_{k} \epsilon_{ijk} \rho^{R}_{k} \right).\end{split}\]</div>
+</section>
+<section id="csl">
+<h3>CSL<a class="headerlink" href="#csl" title="Permalink to this headline">#</a></h3>
+<p>When the intersection of the two lattice forms a lattice, we call it as the the coincidence-site lattice (CSL),</p>
+<div class="math notranslate nohighlight">
+\[  \mathrm{CSL}(L_{\mathbf{A}}, L_{\mathbf{A}'})
+    := L_{\mathbf{A}} \cap L_{\mathbf{A}'}\]</div>
+<p>We denote the ratio of volumes of the primitive cell of CSL and the two lattices as <span class="math notranslate nohighlight">\(\Sigma \, (\geq 1)\)</span>.</p>
+<p>The complete pattern-shift lattice (DSCL) is defined as a maximal sublattice of <span class="math notranslate nohighlight">\(L_{\mathbf{A}}\)</span> such that also contains <span class="math notranslate nohighlight">\(L_{\mathbf{A}'}\)</span>.</p>
+<p>Grimmer showed the following <span id="id2">[<a class="reference internal" href="#id6" title="H. Grimmer. Coincidence-site lattices. Acta Crystallographica Section A, 32(5):783–785, Sep 1976. URL: https://doi.org/10.1107/S056773947601231X, doi:10.1107/S056773947601231X.">Gri76</a>]</span> <a class="footnote-reference brackets" href="#footnote2" id="id3">2</a>:</p>
+<ul class="simple">
+<li><p>(Theorem 1) If the CSL is not empty, the rotation matrix <span class="math notranslate nohighlight">\(\overline{\mathbf{R}}\)</span> is rational, that is, in <span class="math notranslate nohighlight">\(\mathbb{Q}^{3 \times 3}\)</span>.</p></li>
+<li><p>(Theorem 2) <span class="math notranslate nohighlight">\(\Sigma\)</span> is the least positive integer such that <span class="math notranslate nohighlight">\(\Sigma \overline{\mathbf{R}}\)</span> and <span class="math notranslate nohighlight">\(\Sigma \overline{\mathbf{R}}^{-1}\)</span> are integer matrices.</p></li>
+</ul>
+<p>Theorem 2 is shown with a Smith normal form (SNF).
+Let <span class="math notranslate nohighlight">\(\mathbf{E}\)</span> be a 3x3 integer matrix and its elements are coprime, and its SNF be <span class="math notranslate nohighlight">\(\mathrm{diag}(e_{1}, e_{2}, e_{3})\)</span>.
+Here, we write GCD of <span class="math notranslate nohighlight">\(i \times i\)</span> minors of <span class="math notranslate nohighlight">\(\mathbf{E}\)</span> as <span class="math notranslate nohighlight">\(d_{i}\)</span>, we obtain <span class="math notranslate nohighlight">\(e_{i} = d_{i}/d_{i-1}\)</span> (<span class="math notranslate nohighlight">\(d_{0} := 1\)</span>).
+Since the elements of <span class="math notranslate nohighlight">\(\mathbf{E}\)</span> are coprime, we get <span class="math notranslate nohighlight">\(d_{1} = 1\)</span>.
+Also, using the fact that elements of <span class="math notranslate nohighlight">\(|\mathbf{E}| \mathbf{E}^{-1}\)</span> are 2x2 minors of <span class="math notranslate nohighlight">\(\mathbf{E}\)</span>, we get <span class="math notranslate nohighlight">\(d_{2}\)</span> as GCD of the elements of <span class="math notranslate nohighlight">\(|\mathbf{E}| \mathbf{E}^{-1}\)</span>.
+Thus, we obtain <span class="math notranslate nohighlight">\(e_{1}=1\)</span>, <span class="math notranslate nohighlight">\(e_{2} = \)</span> GCD of elements of <span class="math notranslate nohighlight">\(|\mathbf{E}| \mathbf{E}^{-1}\)</span>, and <span class="math notranslate nohighlight">\(e_{3} = |\mathbf{E}| / e_{2}\)</span>.</p>
+</section>
+</section>
+<section id="sigma-values-for-cubic-system-grimmer-a23030">
+<h2><span class="math notranslate nohighlight">\(\Sigma\)</span> values for cubic system <span id="id4">[<a class="reference internal" href="#id7" title="H. Grimmer. The generating function for coincidence site lattices in the cubic system. Acta Crystallographica Section A, 40(2):108–112, Mar 1984. URL: https://doi.org/10.1107/S0108767384000246, doi:10.1107/S0108767384000246.">Gri84</a>]</span><a class="headerlink" href="#sigma-values-for-cubic-system-grimmer-a23030" title="Permalink to this headline">#</a></h2>
+<p>For CSL of cubic lattices, we can take Rodrigues vector as</p>
+<div class="math notranslate nohighlight">
+\[    \mathbf{\rho}^{R} = \frac{n}{m} [hkl]\]</div>
+<p>where <span class="math notranslate nohighlight">\(m\)</span> and <span class="math notranslate nohighlight">\(n\)</span> are positive integers and <span class="math notranslate nohighlight">\(\mathrm{GCD}(m, n) = \mathrm{GCD}(h, l, k) = 1\)</span></p>
+<p>For a given rotation axis <span class="math notranslate nohighlight">\(\hat{\mathbf{\rho}} \propto [hkl]\)</span>, the procedure to enumerate rotation angle for CSLs are as follows:</p>
+<ol class="arabic">
+<li><p>Enumerate <span class="math notranslate nohighlight">\(\Sigma\)</span> up to some maximal value with</p>
+<div class="math notranslate nohighlight">
+\[    \alpha \Sigma = m^{2} + (h^{2} + k^{2} + l^{2}) n^{2},\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha = 1, 2, 4\)</span>.</p>
+</li>
+<li><p>Calculate <span class="math notranslate nohighlight">\(\theta\)</span> for each <span class="math notranslate nohighlight">\(\Sigma\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[    \tan \frac{\theta}{2} = \frac{n}{m} (h^{2} + k^{2} + l^{2})^{1/2}\]</div>
+</li>
+</ol>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">#</a></h2>
+<div class="docutils container" id="id5">
+<dl class="citation">
+<dt class="label" id="id6"><span class="brackets">Gri76</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id9">2</a>)</span></dt>
+<dd><p>H. Grimmer. Coincidence-site lattices. <em>Acta Crystallographica Section A</em>, 32(5):783–785, Sep 1976. URL: <a class="reference external" href="https://doi.org/10.1107/S056773947601231X">https://doi.org/10.1107/S056773947601231X</a>, <a class="reference external" href="https://doi.org/10.1107/S056773947601231X">doi:10.1107/S056773947601231X</a>.</p>
+</dd>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id4">Gri84</a></span></dt>
+<dd><p>H. Grimmer. The generating function for coincidence site lattices in the cubic system. <em>Acta Crystallographica Section A</em>, 40(2):108–112, Mar 1984. URL: <a class="reference external" href="https://doi.org/10.1107/S0108767384000246">https://doi.org/10.1107/S0108767384000246</a>, <a class="reference external" href="https://doi.org/10.1107/S0108767384000246">doi:10.1107/S0108767384000246</a>.</p>
+</dd>
+</dl>
+</div>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="footnote"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><a class="reference external" href="https://cseweb.ucsd.edu/classes/wi10/cse206a/lec2.pdf">https://cseweb.ucsd.edu/classes/wi10/cse206a/lec2.pdf</a></p>
+</dd>
+<dt class="label" id="footnote2"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>These are simplified cases from <span id="id9">[<a class="reference internal" href="#id6" title="H. Grimmer. Coincidence-site lattices. Acta Crystallographica Section A, 32(5):783–785, Sep 1976. URL: https://doi.org/10.1107/S056773947601231X, doi:10.1107/S056773947601231X.">Gri76</a>]</span>.</p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">atomman-gb</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="api/api.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Kohei Shinohara<br/>
+  
+      &copy; Copyright 2022, Kohei Shinohara.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
