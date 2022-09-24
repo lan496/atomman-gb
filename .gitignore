@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 docs_build/
+gh-pages*
