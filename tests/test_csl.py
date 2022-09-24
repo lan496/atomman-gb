@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from atomman_gb.csl import get_csl

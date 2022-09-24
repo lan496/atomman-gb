@@ -3,12 +3,13 @@ from __future__ import annotations
 
 from itertools import permutations
 from math import gcd
-from typing import Any
+from typing import Any, Tuple
 
 import numpy as np
 from atomman import Atoms, Box, System
 from numpy.typing import NDArray
 from scipy.spatial import distance_matrix
+from typing_extensions import TypeAlias  # for Python<3.10
 
 from atomman_gb.csl import get_csl
 from atomman_gb.system import make_supercell, normalize, rotate_system
@@ -19,8 +20,8 @@ from atomman_gb.utils import (
     is_integer_array,
 )
 
-Axis = tuple[int, int, int]
-Plane = tuple[int, int, int]
+Axis: TypeAlias = Tuple[int, int, int]
+Plane: TypeAlias = Tuple[int, int, int]
 
 
 class CubicGBInfo:
