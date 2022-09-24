@@ -51,7 +51,7 @@ repos:
     hooks:
     - id: pydocstyle
       additional_dependencies: ["toml"]
-      files: ^src/spgrep/
+      files: ^src/atomman_gb/
   # Notebook
   - repo: https://github.com/nbQA-dev/nbQA
     rev: 1.5.0

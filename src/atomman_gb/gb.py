@@ -1,14 +1,16 @@
+"""Grain-boundary generator for cubic system."""
 from __future__ import annotations
 
 from itertools import permutations
 from math import gcd
+from typing import Any
 
 import numpy as np
 from atomman import Atoms, Box, System
-from hsnf import column_style_hermite_normal_form
 from numpy.typing import NDArray
 from scipy.spatial import distance_matrix
 
+from atomman_gb.csl import get_csl
 from atomman_gb.system import make_supercell, rotate_system
 from atomman_gb.utils import (
     extgcd,
@@ -22,7 +24,18 @@ Plane = tuple[int, int, int]
 
 
 class CubicGBInfo:
+    """Grain-boundary information for cubic system."""
+
     def __init__(self, uvw: Axis, max_sigma: int):
+        """Grain-boundary information for cubic system.
+
+        Parameters
+        ----------
+        uvw: (int, int, int)
+            Axis direction
+        max_sigma: int
+            Maximum number to search for sigma
+        """
         self._uvw = uvw
         self._max_sigma = max_sigma
         assert gcd_on_list(self.uvw) == 1
@@ -34,23 +47,7 @@ class CubicGBInfo:
         angle_list = self._enumerate_cubic_csl_angle()
         datum = []
         for R, theta, sigma, _, _ in angle_list:
-            # Let lattice-1 be L1 = Z^3 and lattice-2 be L2 = R Z^3.
-            # CSL = L1 cap L2
-            #     = dual(dual(L[I]) + dual(L[R]))
-            #     = dual( L(I|R) )
-            # Ref: https://cseweb.ucsd.edu/classes/wi10/cse206a/lec2.pdf
-            dunion = np.concatenate([np.eye(3), R], axis=1)  # (3, 6)
-            dbasis_hnf, _ = column_style_hermite_normal_form(np.around(dunion * sigma).astype(int))
-            dbasis = dbasis_hnf[:, :3].astype(np.float_) / sigma  # (3, 3)
-            # rbasis[:, i] is the i-th basis vector of CSL
-            csl = dbasis @ np.linalg.inv(dbasis.T @ dbasis)
-
-            # sanity check
-            assert is_integer_array(csl)
-            assert is_integer_array(np.dot(np.linalg.inv(R), csl))
-            assert np.linalg.matrix_rank(csl) == 3
-
-            csl = np.around(csl)
+            csl = get_csl(R, sigma)
             csl_uvw = self._find_csl_parallel_uvw(csl)
 
             # enumerate symmetric tilt planes
@@ -71,21 +68,31 @@ class CubicGBInfo:
 
     @property
     def uvw(self):
+        """Return axis direction."""
         return self._uvw
 
     @property
     def max_sigma(self):
+        """Maximum number to search for sigma."""
         return self._max_sigma
 
     @property
     def planer_basis(self) -> NDArray:
-        """
-        Two basis vectors orthogonal to uvw and uvw
-        """
+        """Return two basis vectors orthogonal to uvw and uvw."""
         return self._planer_basis
 
     @property
-    def datum(self):
+    def datum(self) -> list[dict[str, Any]]:
+        """Return list of dictionary of grain-boundary information.
+
+        Each dictionary has the following keys:
+            - sigma
+            - theta: angle of GB
+            - rotation: rotation matrix in fractional coordinates
+            - csl: transformation matrix from lattice-1 to CSL
+            - csl_uvw: transformation matrix from lattice-1 to supercell of CSL parallel ot uvw
+            - symmetric_tilt: [(plane_1, plane_2, plane_mid)]
+        """
         return self._datum
 
     def _get_planer_basis(self):
@@ -133,7 +140,8 @@ class CubicGBInfo:
         return [basis1, basis2]
 
     def _enumerate_cubic_csl_angle(self):
-        """
+        """Enumerate CSL angles.
+
         O(sigma^3)
 
         Returns
@@ -240,8 +248,8 @@ class CubicGBInfo:
         return ret
 
     def _find_csl_parallel_uvw(self, csl: NDArray, atol: float = 1e-8):
-        """
-        Make basis of CSL parallel to uvw.
+        """Make basis of CSL parallel to uvw.
+
         An obtained basis may expand supercell!
         """
 
@@ -267,18 +275,20 @@ class CubicGBInfo:
 
 
 class CubicGBGenerator:
-    """
-    Parameters
-    ----------
-    system
-    transform:
-        transformation matrix of given `system` to monoclinic grain boundary.
-        Boundary plane is assumed to be perpendicular to z-axis.
-    rotation:
-        rotation matrix from lattice-1 to lattice-2
-    """
+    """Grain-boundary generator for cubic system."""
 
     def __init__(self, system: System, transform: NDArray, rotation: NDArray) -> None:
+        """Grain-boundary generator for cubic system.
+
+        Parameters
+        ----------
+        system
+        transform:
+            transformation matrix of given `system` to monoclinic grain boundary.
+            Boundary plane is assumed to be perpendicular to z-axis.
+        rotation:
+            rotation matrix from lattice-1 to lattice-2
+        """
         self._initial_system = system
         self._transform = transform
         self._rotation = rotation
@@ -295,7 +305,8 @@ class CubicGBGenerator:
         assert np.allclose(self._system1.box.vects, self._system2.box.vects)  # sublattice of CSL
 
     @property
-    def initial_system(self):
+    def initial_system(self) -> System:
+        """Return initial system."""
         return self._initial_system
 
     def generate(
@@ -304,14 +315,17 @@ class CubicGBGenerator:
         ab_shift: NDArray | None = None,
         c_thickness: float = 0,
         dmin: float = 1.0,
-    ):
-        """
+    ) -> list[System]:
+        """Generate grain boundary.
+
         Parameters
         ----------
-        expand_times:
-        ab_shift: (?, 2)
-        c_thickness: width between system 1 and 2
-        dmin: delete one of too close atoms less than `dmin`
+        expand_times: int
+        ab_shift: array, (-1, 2)
+        c_thickness: float
+            width between system 1 and 2
+        dmin: float
+            delete one of too close atoms less than ``dmin``
         """
         if ab_shift is None:
             ab_shift = np.zeros((1, 2))
@@ -381,8 +395,14 @@ class CubicGBGenerator:
 
     @classmethod
     def make_symmetric_tilt(
-        cls, system: System, rotation: NDArray, uvw: Axis, csl: NDArray, plane_mid: Plane
+        cls,
+        system: System,
+        rotation: NDArray,
+        uvw: Axis,
+        csl: NDArray,
+        plane_mid: Plane,
     ):
+        """Construct GB generator for symmetric tilt GB."""
         # Transformation matrix: original system -> system-1
         axis_b = csl @ accommodate_vector_in_lattice(csl, np.array(uvw))
         axis_c = csl @ accommodate_vector_in_lattice(csl, np.array(plane_mid))
@@ -391,16 +411,14 @@ class CubicGBGenerator:
 
         return cls(system, transform=transform1, rotation=rotation)
 
-    @classmethod
-    def make_twist(cls, system: System, rotation: NDArray, uvw: Axis, csl: NDArray):
-        # axis_c = csl @ accommodate_vector_in_lattice(csl, np.array(uvw))
-        raise NotImplementedError
+    # @classmethod
+    # def make_twist(cls, system: System, rotation: NDArray, uvw: Axis, csl: NDArray):
+    #     # axis_c = csl @ accommodate_vector_in_lattice(csl, np.array(uvw))
+    #     raise NotImplementedError
 
 
 def accommodate_vector_in_lattice(matrix, v):
-    """
-    Find integer vector `x` s.t. matrix @ x = v
-    """
+    """Find integer vector ``x`` s.t. ``matrix @ x = v``."""
     x = np.linalg.solve(matrix, v)
     mult = 1
     if not is_integer_array(x):
