@@ -130,3 +130,4 @@ dmypy.json
 
 docs_build/
 gh-pages*
+*.atom_dump

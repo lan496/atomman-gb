@@ -1,14 +1,3 @@
-# atomman-gb
-
-Grain-boundary generator with [Atomman](https://github.com/usnistgov/atomman)
-
-## Gallery
-
-![](examples/gb_13_67.png)
-
-## Usage
-
-```python
 from pathlib import Path
 
 import numpy as np
@@ -30,7 +19,9 @@ def get_system_fcc() -> System:
     atoms = Atoms(atype=atype, pos=pos)
 
     symbols = ("Al",)
-    system = System(atoms=atoms, box=box, symbols=symbols, scale=True)  # set "scale=True" for fractional coordinates!
+    system = System(
+        atoms=atoms, box=box, symbols=symbols, scale=True
+    )  # set "scale=True" for fractional coordinates!
 
     return system
 
@@ -64,37 +55,3 @@ if __name__ == "__main__":
             ) as f:
                 atom_dump = gb.dump("atom_dump")
                 f.write(atom_dump)
-```
-
-## Installation
-
-```shell
-git clone git@github.com:lan496/atomman-gb.git
-cd atomman-gb
-conda create -n atomman-gb python=3.10 pip
-conda activate atomman-gb
-pip install .
-```
-
-## License
-
-atomman-gb is released under a MIT license.
-
-## Development
-
-Installation
-```shell
-pip install -e ".[dev,docs]" 
-```
-
-Document
-```shell
-sphinx-autobuild --host=0.0.0.0 --port=8000 docs docs_build -v
-```
-
-## References
-
-- <https://github.com/wojdyr/gosam>
-- <https://github.com/oekosheri/GB_code>
-- <https://github.com/spatala/gbpy>
-- <https://github.com/ksyang2013/aimsgb>

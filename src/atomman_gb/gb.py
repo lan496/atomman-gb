@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 from scipy.spatial import distance_matrix
 
 from atomman_gb.csl import get_csl
-from atomman_gb.system import make_supercell, rotate_system
+from atomman_gb.system import make_supercell, normalize, rotate_system
 from atomman_gb.utils import (
     extgcd,
     find_smallest_multiplier,
@@ -48,10 +48,9 @@ class CubicGBInfo:
         datum = []
         for R, theta, sigma, _, _ in angle_list:
             csl = get_csl(R, sigma)
-            csl_uvw = self._find_csl_parallel_uvw(csl)
 
             # enumerate symmetric tilt planes
-            symmetric_tilt_planes = self._enumerate_symmetric_tilt_plane(theta, csl_uvw)
+            symmetric_tilt_planes = self._enumerate_symmetric_tilt_plane(theta)
 
             datum.append(
                 {
@@ -59,7 +58,6 @@ class CubicGBInfo:
                     "theta": theta,
                     "rotation": R,
                     "csl": np.around(csl),  # transformation matrix from lattice-1 to CSL
-                    "csl_uvw": np.around(csl_uvw),
                     "symmetric_tilt": symmetric_tilt_planes,  # [(plane_1, plane_2, plane_mid)]
                 }
             )
@@ -198,7 +196,7 @@ class CubicGBInfo:
         # We do not need to transform to crystallographic coordinates for primitive cubic systems!
         return R
 
-    def _enumerate_symmetric_tilt_plane(self, theta, csl_uvw):
+    def _enumerate_symmetric_tilt_plane(self, theta):
         # For symmetric tilt plane, (hkl) and R(hkl) are transformed to each other by mirror operations.
         # For primitive cubic systems, mirror planes are {100} and {110}
         mirror_planes = np.array(
@@ -230,8 +228,9 @@ class CubicGBInfo:
                 continue
 
             Rhalf = self._get_rotation_matrix(theta / 2)
-            plane_1 = purify_hkl(np.dot(Rhalf.T, plane))  # rotate -theta/2
-            plane_2 = purify_hkl(np.dot(Rhalf, plane))  # rotate theta/2
+            # Be careful this is contravariance!
+            plane_1 = purify_vect(np.dot(Rhalf, plane))  # rotate -theta/2
+            plane_2 = purify_vect(np.dot(Rhalf.T, plane))  # rotate theta/2
 
             ret.append(
                 {
@@ -246,32 +245,6 @@ class CubicGBInfo:
                 used.add(tuple(p))
 
         return ret
-
-    def _find_csl_parallel_uvw(self, csl: NDArray, atol: float = 1e-8):
-        """Make basis of CSL parallel to uvw.
-
-        An obtained basis may expand supercell!
-        """
-
-        def _is_zero(array) -> bool:
-            return np.allclose(array, 0, atol=atol)
-
-        # substitute the last basis vector with uvw
-        c = accommodate_vector_in_lattice(csl, self.uvw)
-        to_parallel = np.zeros((3, 3))
-        to_parallel[:, 2] = c
-        # choose two vectors from `csl` such that to_parallel is invertible
-        for i in range(3):
-            if _is_zero(c[i]):
-                continue
-            to_parallel[(i + 1) % 3, 0] = 1
-            to_parallel[(i + 2) % 3, 1] = 1
-            break
-
-        csl_uvw = csl @ to_parallel
-        assert not _is_zero(np.linalg.det(csl_uvw))
-
-        return csl_uvw
 
 
 class CubicGBGenerator:
@@ -293,6 +266,7 @@ class CubicGBGenerator:
         self._transform = transform
         self._rotation = rotation
 
+        # system1: expand by `transform`
         self._system1 = make_supercell(self.initial_system, self._transform)
 
         # Transformation matrix: original system -> rotated -> system-2
@@ -300,9 +274,20 @@ class CubicGBGenerator:
         assert is_integer_array(transform2)
         transform2 = np.around(transform2)
 
-        system2_rot = rotate_system(self.initial_system, self._rotation)
-        self._system2 = make_supercell(system2_rot, transform2)
+        # system2: Rotate initial system by theta and expand by `transform2`
+        system2 = make_supercell(self.initial_system, transform2)
+        self._system2 = rotate_system(system2, self._rotation)
         assert np.allclose(self._system1.box.vects, self._system2.box.vects)  # sublattice of CSL
+
+        # Rotate axes for LAMMPS
+        self._system1, rot = normalize(self._system1)
+        self._system2, _ = normalize(self._system2, rot)
+
+        # TODO: handle multiple inequivalent shifts for complex system!
+        z1 = unique_zcoords(self._system1.atoms.pos[:, 2])
+        self._system1_shift = np.array([0, 0, (z1[0] + z1[1]) / 2])
+        z2 = unique_zcoords(self._system2.atoms.pos[:, 2])
+        self._system2_shift = np.array([0, 0, (z2[0] + z2[1]) / 2])
 
     @property
     def initial_system(self) -> System:
@@ -312,23 +297,23 @@ class CubicGBGenerator:
     def generate(
         self,
         expand_times: int = 1,
-        ab_shift: NDArray | None = None,
+        ab_shifts: NDArray | None = None,
         c_thickness: float = 0,
-        dmin: float = 1.0,
+        dmin: float | None = None,
     ) -> list[System]:
         """Generate grain boundary.
 
         Parameters
         ----------
         expand_times: int
-        ab_shift: array, (-1, 2)
+        ab_shifts: array, (-1, 2)
         c_thickness: float
             width between system 1 and 2
         dmin: float
             delete one of too close atoms less than ``dmin``
         """
-        if ab_shift is None:
-            ab_shift = np.zeros((1, 2))
+        if ab_shifts is None:
+            ab_shifts = np.zeros((1, 2))
 
         # expand `2 * expand_times` times along c-axis
         expand = np.diag([1, 1, 2 * expand_times])
@@ -337,10 +322,14 @@ class CubicGBGenerator:
 
         # choose z <= 0.5 for system1
         eps = 1e-8
-        frac_coords1 = np.remainder(system1.scale(system1.atoms.pos), 1)
+        frac_coords1 = np.remainder(
+            system1.scale(system1.atoms.pos) + self._system1_shift[None, :], 1
+        )
         select1 = frac_coords1[:, 2] < 0.5 + eps
         # choose z >= 0.5 for system2
-        frac_coords2 = np.remainder(system2.scale(system2.atoms.pos), 1)
+        frac_coords2 = np.remainder(
+            system2.scale(system2.atoms.pos) + self._system2_shift[None, :], 1
+        )
         select2 = frac_coords2[:, 2] > 0.5 - eps
 
         new_vects = system1.box.vects[:]
@@ -357,7 +346,7 @@ class CubicGBGenerator:
         new_symbols = system1.symbols + system2.symbols
 
         ret = []
-        for xa, xb in ab_shift:
+        for xa, xb in ab_shifts:
             frac_coords2_shifted = frac_coords2[select2]
             frac_coords2_shifted[:, 0] += xa
             frac_coords2_shifted[:, 1] += xb
@@ -365,9 +354,12 @@ class CubicGBGenerator:
             pos2[:, 2] += c_thickness
 
             # remove atoms too close pairs from `pos2`
-            dists = distance_matrix(pos1_on_plane, pos2)
-            mask = np.min(dists, axis=0) > dmin
-            pos2 = pos2[mask, :]
+            if dmin and (pos1_on_plane.shape[0] > 0):
+                dists = distance_matrix(pos1_on_plane, pos2)
+                mask = np.min(dists, axis=0) > dmin
+                pos2 = pos2[mask, :]
+            else:
+                mask = np.ones(pos2.shape[0], dtype=bool)
 
             new_natoms = len(pos1) + len(pos2)
             new_pos = np.concatenate([pos1, pos2])
@@ -387,34 +379,44 @@ class CubicGBGenerator:
                 scale=False,
                 symbols=new_symbols,
             )
-            new_system.pbc = (True, True, False)  # set off pbc in z-axis
 
             ret.append(new_system)
 
         return ret
 
     @classmethod
-    def make_symmetric_tilt(
-        cls,
-        system: System,
-        rotation: NDArray,
-        uvw: Axis,
-        csl: NDArray,
-        plane_mid: Plane,
-    ):
+    def make_tilt(cls, system: System, rotation: NDArray, uvw: Axis, csl: NDArray, plane: Plane):
         """Construct GB generator for symmetric tilt GB."""
-        # Transformation matrix: original system -> system-1
-        axis_b = csl @ accommodate_vector_in_lattice(csl, np.array(uvw))
-        axis_c = csl @ accommodate_vector_in_lattice(csl, np.array(plane_mid))
+        axis_b = np.array(uvw)
+        axis_c = np.array(plane)
         axis_a = np.cross(axis_b, axis_c)
-        transform1 = np.array([axis_a, axis_b, axis_c]).T
+        axis_a = axis_a // gcd_on_list(axis_a)
+        B = np.transpose([axis_a, axis_b, axis_c])
 
-        return cls(system, transform=transform1, rotation=rotation)
+        # Transformation matrix: original system -> system-1
+        # We need to find transformation matrix M such that
+        # csl @ M = B @ np.diag([l, m, n])
+        Mtmp = np.linalg.solve(csl, B)
+        M = Mtmp @ np.diag([find_smallest_multiplier(Mtmp[:, i]) for i in range(3)])
+        transform = csl @ M
 
-    # @classmethod
-    # def make_twist(cls, system: System, rotation: NDArray, uvw: Axis, csl: NDArray):
-    #     # axis_c = csl @ accommodate_vector_in_lattice(csl, np.array(uvw))
-    #     raise NotImplementedError
+        return cls(system, transform=transform, rotation=rotation)
+
+    @classmethod
+    def make_twist(cls, system: System, rotation: NDArray, uvw: Axis, csl: NDArray):
+        """Construct GB generator for twist GB."""
+        axis_c = np.array(uvw)
+        csl_uvw = find_csl_parallel_uvw(csl, uvw)
+        axis_b = csl_uvw[:, 1]
+        axis_a = np.cross(axis_b, axis_c)
+        axis_a = axis_a // gcd_on_list(axis_a)
+        B = np.transpose([axis_a, axis_b, axis_c])
+
+        Mtmp = np.linalg.solve(csl, B)
+        M = Mtmp @ np.diag([find_smallest_multiplier(Mtmp[:, i]) for i in range(3)])
+        transform = csl @ M
+
+        return cls(system, transform=transform, rotation=rotation)
 
 
 def accommodate_vector_in_lattice(matrix, v):
@@ -426,3 +428,44 @@ def accommodate_vector_in_lattice(matrix, v):
         mult = find_smallest_multiplier(x)
         x = np.around(x * mult)
     return x
+
+
+def purify_vect(hkl):
+    """Round vector to integers."""
+    hkl = hkl / np.min(np.abs(hkl[np.nonzero(hkl)]))
+    mult = find_smallest_multiplier(hkl)
+    hkl = np.around(hkl * mult).astype(int)
+    return hkl
+
+
+def find_csl_parallel_uvw(csl: NDArray, uvw: Axis, atol: float = 1e-8):
+    """Make basis of CSL parallel to uvw.
+
+    An obtained basis may expand supercell!
+    """
+
+    def _is_zero(array) -> bool:
+        return np.allclose(array, 0, atol=atol)
+
+    # substitute the last basis vector with uvw
+    c = accommodate_vector_in_lattice(csl, uvw)
+    to_parallel = np.zeros((3, 3))
+    to_parallel[:, 2] = c
+    # choose two vectors from `csl` such that to_parallel is invertible
+    for i in range(3):
+        if _is_zero(c[i]):
+            continue
+        to_parallel[(i + 1) % 3, 0] = 1
+        to_parallel[(i + 2) % 3, 1] = 1
+        break
+
+    csl_uvw = csl @ to_parallel
+    assert not _is_zero(np.linalg.det(csl_uvw))
+
+    return csl_uvw
+
+
+def unique_zcoords(zcoords, decimals=8):
+    """Make one-axis coordinates unique."""
+    _, indices = np.unique(np.around(zcoords, decimals), return_index=True)
+    return zcoords[indices]
