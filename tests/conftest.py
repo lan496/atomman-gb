@@ -3,7 +3,7 @@ from __future__ import annotations
 import atomman.unitconvert as uc
 import numpy as np
 import pytest
-from atomman import System
+from atomman import Atoms, Box, System
 
 
 def get_fcc(a: float) -> System:
@@ -24,7 +24,6 @@ def get_fcc(a: float) -> System:
     # set "scale=True" for fractional coordinates!
     system = System(atoms=atoms, box=box, scale=True)
     return system
-
 
 
 @pytest.fixture

@@ -15,6 +15,9 @@ REQUIRED = [
     "numpy>=1.20.1",
     "spglib>=2.0.1",
     "atomman>=1.4.3",
+    "ase",  # Required for atomman dump
+    "pymatgen",  # Required for atomman dump
+    "phonopy",  # Required for atomman dump
     "hsnf>=0.3.15",
 ]
 

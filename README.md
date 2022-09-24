@@ -1,6 +1,6 @@
 # atomman-gb
 
-Grain-boundary generator with Atomman
+Grain-boundary generator with [Atomman](https://github.com/usnistgov/atomman)
 
 ## Usage
 

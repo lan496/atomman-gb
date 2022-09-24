@@ -3,15 +3,13 @@ from __future__ import annotations
 from itertools import product
 
 import numpy as np
-from numpy.typing import NDArray
 from atomman import Atoms, Box, System
-
 from hsnf import smith_normal_form
+from numpy.typing import NDArray
 
 
 def make_supercell(system: System, matrix: NDArray):
-    """Transform basis vectors of system as ``(a' b' c') = system.box.vects.T @ matrix``.
-    """
+    """Transform basis vectors of system as ``(a' b' c') = system.box.vects.T @ matrix``."""
     D, P, _ = smith_normal_form(matrix)  # D = P @ matrix @ Q
     Pinv = np.around(np.linalg.inv(P)).astype(int)
     invariants = tuple(D.diagonal())
